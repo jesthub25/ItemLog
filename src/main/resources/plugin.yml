@@ -1,0 +1,67 @@
+name: ItemLog
+version: '${project.version}'
+main: com.jestron.itemlog.ItemLog
+api-version: '1.16'
+author: Jestron
+description: Yetkililer için item takip eklentisi (atma, alma, ölüm düşüşü, takas zinciri).
+website: https://github.com/jesthub25/ItemLog
+
+commands:
+  itemlog:
+    description: Item loglarını görüntüler.
+    usage: |
+      /itemlog                     → kendi logların
+      /itemlog <oyuncu>            → oyuncunun logları
+      /itemlog <oyuncu> takas      → sen ↔ oyuncu arası transferler
+      /itemlog <a> takas <b>       → a ↔ b arası transferler
+      /itemlog reload              → konfigürasyonu yeniden yükle
+    aliases: [ilog]
+    permission: itemlog.use
+    permission-message: "§c[ItemLog] Bu komutu kullanma yetkiniz yok. (itemlog.use)"
+
+  itemlogreload:
+    description: ItemLog konfigürasyonunu yeniden yükler.
+    usage: /itemlogreload
+    aliases: [ilreload]
+    permission: itemlog.reload
+    permission-message: "§c[ItemLog] Bu komutu kullanma yetkiniz yok. (itemlog.reload)"
+
+permissions:
+  itemlog.*:
+    description: Tüm ItemLog yetkileri.
+    default: op
+    children:
+      itemlog.use: true
+      itemlog.others: true
+      itemlog.takas: true
+      itemlog.teleport: true
+      itemlog.give: true
+      itemlog.reload: true
+
+  itemlog.use:
+    description: /itemlog komutu ve kendi loglarını görme.
+    default: op
+
+  itemlog.others:
+    description: Başka oyuncuların loglarını görme (/itemlog <oyuncu>).
+    default: op
+    children:
+      itemlog.use: true
+
+  itemlog.takas:
+    description: İki oyuncu arası transfer (takas) logunu görme.
+    default: op
+    children:
+      itemlog.use: true
+
+  itemlog.teleport:
+    description: Detay ekranından item konumuna ışınlanma.
+    default: op
+
+  itemlog.give:
+    description: Detay ekranından logdaki itemin birebir kopyasını alma. Sadece güvenilir yetkililere verin.
+    default: op
+
+  itemlog.reload:
+    description: /itemlogreload ve /itemlog reload.
+    default: op

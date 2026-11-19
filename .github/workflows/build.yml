@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Derle
+        run: mvn -B -ntp clean package
+
+      - name: Bytecode sürümünü doğrula (Java 8 = major 52)
+        run: |
+          JAR=$(ls target/ItemLog-*.jar | head -n1)
+          mkdir -p /tmp/chk && cd /tmp/chk && unzip -q -o "$GITHUB_WORKSPACE/$JAR" 'com/jestron/itemlog/ItemLog.class'
+          javap -v com/jestron/itemlog/ItemLog.class | grep "major version: 52"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ItemLog
+          path: target/ItemLog-*.jar
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/ItemLog-*.jar
+          generate_release_notes: true
